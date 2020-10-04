@@ -1,0 +1,21 @@
+{
+	"name": "DestinationDataset_q66",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adlsgen2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "DIM_POZO.parquet",
+				"folderPath": "Curated",
+				"fileSystem": "tallerdwh10"
+			},
+			"compressionCodec": "none"
+		},
+		"schema": []
+	}
+}
