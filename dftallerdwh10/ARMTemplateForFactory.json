@@ -1,0 +1,576 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "dftallerdwh10"
+		},
+		"adlsgen2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'adlsgen2'"
+		},
+		"adlsgen2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsgen2tallerdwh10.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/CopyLago1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy_q66",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [
+							{
+								"name": "Source",
+								"value": "tallerdwh10/Raw/CD_WELL.parquet"
+							},
+							{
+								"name": "Destination",
+								"value": "tallerdwh10/Curated/DIM_POZO.parquet"
+							}
+						],
+						"typeProperties": {
+							"source": {
+								"type": "ParquetSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true
+								}
+							},
+							"sink": {
+								"type": "ParquetSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "ParquetWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"validateDataConsistency": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SourceDataset_q66",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DestinationDataset_q66",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SourceDataset_q66')]",
+				"[concat(variables('factoryId'), '/datasets/DestinationDataset_q66')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DestinationDataset_q66')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adlsgen2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DIM_POZO.parquet",
+						"folderPath": "Curated",
+						"fileSystem": "tallerdwh10"
+					},
+					"compressionCodec": "none"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adlsgen2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SourceDataset_q66')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "adlsgen2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Parquet",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "CD_WELL.parquet",
+						"folderPath": "Raw",
+						"fileSystem": "tallerdwh10"
+					},
+					"compressionCodec": "snappy"
+				},
+				"schema": [
+					{
+						"name": "WELL_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "SITE_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "TIGHT_GROUP_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "ACTIVE_UI_UNITSYS_ID",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "COORD_TYPE",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "API_NO",
+						"type": "UTF8"
+					},
+					{
+						"name": "BATTERY",
+						"type": "UTF8"
+					},
+					{
+						"name": "REMARKS",
+						"type": "UTF8"
+					},
+					{
+						"name": "COMPLETION_WELL_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_OFFSHORE",
+						"type": "UTF8"
+					},
+					{
+						"name": "DATUM_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "GEO_DESCRIPTION",
+						"type": "UTF8"
+					},
+					{
+						"name": "GEO_LATITUDE",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "GEO_LONGITUDE",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "GEO_OFFSET_REFERENCE",
+						"type": "UTF8"
+					},
+					{
+						"name": "GEO_OFFSET_EAST",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "GEO_OFFSET_NORTH",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "IS_PLATFORM",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_SUBSEA",
+						"type": "UTF8"
+					},
+					{
+						"name": "SLOT_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "SPUD_DATE",
+						"type": "INT96"
+					},
+					{
+						"name": "LOC_COUNTY",
+						"type": "UTF8"
+					},
+					{
+						"name": "REASON",
+						"type": "UTF8"
+					},
+					{
+						"name": "LOC_COUNTRY",
+						"type": "UTF8"
+					},
+					{
+						"name": "USE_SLOT_AS_REFERENCE",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "LOC_STATE",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_COMMON_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_READONLY",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_DESC",
+						"type": "UTF8"
+					},
+					{
+						"name": "SLOT_EW",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WELL_GEOMETRY",
+						"type": "UTF8"
+					},
+					{
+						"name": "SLOT_NS",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "TARGET_FORMATION",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_LEGAL_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "SLOT_RADIAL_ERROR",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "UNIT_SET_ON_CREATE",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELLHEAD_DEPTH",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WATER_DEPTH",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WELL_NET_INT",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "CONVERGENCE",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WELL_OPERATOR",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_DESC_ALTERNATE",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_PURPOSE",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_UWI",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_WORKING_INT",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "CREATE_DATE",
+						"type": "INT96"
+					},
+					{
+						"name": "WELL_OPERATOR_ORIGINAL",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_UWI_TYPE",
+						"type": "UTF8"
+					},
+					{
+						"name": "CREATE_USER_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "CREATE_APP_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "UPDATE_DATE",
+						"type": "INT96"
+					},
+					{
+						"name": "SCALE_FACTOR",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "UPDATE_USER_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "UPDATE_APP_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "WRP_AZIMUTH",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WRP_EW",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WRP_INCLINATION",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WRP_MD",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WRP_NS",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "WRP_OFFSET",
+						"type": "DECIMAL",
+						"precision": 38,
+						"scale": 18
+					},
+					{
+						"name": "WRP_TVD",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "REDRILL_NO",
+						"type": "UTF8"
+					},
+					{
+						"name": "MAASP_A",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "MAASP_B",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "MAASP_C",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "IS_H2S_PRESENT",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_LSA_PRESENT",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_PROJECT_READONLY",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_CO2_PRESENT",
+						"type": "UTF8"
+					},
+					{
+						"name": "REDRILL_PREV_WELL_ID",
+						"type": "UTF8"
+					},
+					{
+						"name": "PREVIOUS_WELL_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_MULTILATERAL",
+						"type": "UTF8"
+					},
+					{
+						"name": "IS_LAKE_DRILLED",
+						"type": "UTF8"
+					},
+					{
+						"name": "LAKE_HEIGHT",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "MAASP_D",
+						"type": "DOUBLE"
+					},
+					{
+						"name": "LAHEE_CLASS",
+						"type": "UTF8"
+					},
+					{
+						"name": "FIELD_NAME",
+						"type": "UTF8"
+					},
+					{
+						"name": "PUMPER_ROUTE",
+						"type": "UTF8"
+					},
+					{
+						"name": "WELL_DIRECTIONS",
+						"type": "UTF8"
+					},
+					{
+						"name": "BATTERY_DIRECTIONS",
+						"type": "UTF8"
+					},
+					{
+						"name": "CONDUCTOR_INSTALL_DATE",
+						"type": "INT96"
+					},
+					{
+						"name": "LEASE_TYPE",
+						"type": "UTF8"
+					},
+					{
+						"name": "FIELD_NUMBER",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_1",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_2",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_3",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_4",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_5",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_6",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_7",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_8",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_9",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_10",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_11",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_12",
+						"type": "UTF8"
+					},
+					{
+						"name": "USER_DEFINED_DATE_1",
+						"type": "INT96"
+					},
+					{
+						"name": "USER_DEFINED_DATE_2",
+						"type": "INT96"
+					},
+					{
+						"name": "USER_DEFINED_DATE_3",
+						"type": "INT96"
+					},
+					{
+						"name": "USER_DEFINED_DATE_4",
+						"type": "INT96"
+					},
+					{
+						"name": "USER_DEFINED_DATE_5",
+						"type": "INT96"
+					},
+					{
+						"name": "ROAD_DESCRIPTION",
+						"type": "UTF8"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/adlsgen2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/adlsgen2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('adlsgen2_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('adlsgen2_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
